@@ -37,7 +37,7 @@ setup(
     author_email = 'jliv84@gmail.com',
     url = 'https://github.com/john-livingston/limbdark',
     license = ['GNU GPLv3'],
-    description ='A very simply package for obtaining Gaussian priors for limb darkening coefficients based on Claret+2012.',
+    description ='A simple package for obtaining Gaussian priors for limb darkening coefficients based on Claret+2012.',
     long_description=rd("README.md") + "\n\n"
                     + "---------\n\n",
     package_dir={"limbdark": "limbdark"},
@@ -51,7 +51,5 @@ setup(
         'Topic :: Scientific/Engineering',
         'Programming Language :: Python'
         ],
-    #include_dirs = [np.get_include()],
-    install_requires = ['pandas'],
-    #ext_modules=[]
+    install_requires = ['numpy', 'pandas'],
 )
