@@ -7,7 +7,7 @@ import pandas as pd
 import pkg_resources
 fp = pkg_resources.resource_filename(__name__, 'data/claret2012_all.txt')
 
-def get_ld_rows(band, teff, uteff, logg, ulogg, fp=fp):
+def get_ld_df(band, teff, uteff, logg, ulogg, fp=fp):
     """
     Requires whitespace delimited table from:
     http://vizier.cfa.harvard.edu/viz-bin/VizieR-3?-source=J/A%2bA/546/A14

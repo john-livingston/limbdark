@@ -16,9 +16,9 @@ args = parser.parse_args()
 
 fp = 'claret2012_all.txt'
 if args.band == 'kep':
-    df = get_ld_rows('Kp', args.teff, args.uteff, args.logg, args.ulogg)
+    df = get_ld_df('Kp', args.teff, args.uteff, args.logg, args.ulogg)
 elif args.band == 'spz':
-    df = get_ld_rows('S2', args.teff, args.uteff, args.logg, args.ulogg)
+    df = get_ld_df('S2', args.teff, args.uteff, args.logg, args.ulogg)
 
 print("number of models: {}".format(df.shape[0]))
 print("\tmin\tmean\tmax")
