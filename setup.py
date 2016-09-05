@@ -40,9 +40,9 @@ setup(
     description ='A very simply package for obtaining Gaussian priors for limb darkening coefficients based on Claret+2012.',
     long_description=rd("README.md") + "\n\n"
                     + "---------\n\n",
-    package_dir={"limbdark": "src/limbdark"},
+    package_dir={"limbdark": "limbdark"},
     package_data={"limbdark": ["data/*.txt"]},
-    scripts=['src/scripts/limbdark'],
+    scripts=['scripts/limbdark'],
     include_package_data=True,
     keywords=['limb-darkening'],
     classifiers = [
