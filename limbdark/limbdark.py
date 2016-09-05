@@ -24,7 +24,7 @@ def get_ld_df(band, teff, uteff, logg, ulogg, fp=fp):
 
 def get_ld(band, teff, uteff, logg, ulogg, median=True, fp=fp):
 
-    df = get_ld_rows(band, teff, uteff, logg, ulogg, fp)
+    df = get_ld_df(band, teff, uteff, logg, ulogg, fp)
     u1, u2 = df.u1, df.u2
 
     if median:
