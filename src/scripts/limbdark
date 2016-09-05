@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import numpy as np
+import argparse
+from limbdark import get_ld_rows
+
+
+parser = argparse.ArgumentParser(description="retrieve limb-darkening coefficients for Kepler")
+parser.add_argument('teff', help='effective temperature of the star (Teff) [Kelvin]', type=float)
+parser.add_argument('uteff', help='uncertainty in Teff', type=float)
+parser.add_argument('logg', help='surface gravity of the star (logg) [dex]', type=float, default=0)
+parser.add_argument('ulogg', help='uncertainty in logg', type=float, default=10)
+parser.add_argument('-b', '--band', help='the bandpass name: either kep or spz', type=str, default='kep')
+
+args = parser.parse_args()
+
+fp = 'claret2012_all.txt'
+if args.band == 'kep':
+    df = get_ld_rows('Kp', args.teff, args.uteff, args.logg, args.ulogg)
+elif args.band == 'spz':
+    df = get_ld_rows('S2', args.teff, args.uteff, args.logg, args.ulogg)
+
+print("number of models: {}".format(df.shape[0]))
+print("\tmin\tmean\tmax")
+print("temp:\t{0:.2f}\t{1:.2f}\t{2:.2f}".format(df.teff.min(), df.teff.mean(), df.teff.max()))
+print("logg:\t{0:.2f}\t{1:.2f}\t{2:.2f}".format(df.logg.min(), df.logg.mean(), df.logg.max()))
+print("feh:\t{0:.2f}\t{1:.2f}\t{2:.2f}".format(df.feh.min(), df.feh.mean(), df.feh.max()))
+print("-" * 10 + " limb-darkening coefficients " + "-" * 10)
+print("mean:   {0:.6f}, {1:.6f}".format(df.u1.mean(), df.u2.mean()))
+print("median: {0:.6f}, {1:.6f}".format(np.median(df.u1), np.median(df.u2)))
+print("std:    {0:.6f}, {1:.6f}".format(np.std(df.u1), np.std(df.u2)))
