@@ -29,10 +29,10 @@ else:
         f.close()
         return r
 
-setup(    
-    name='limbdark', 
+setup(
+    name='limbdark',
     packages =['limbdark'],
-    version="0.1.1", 
+    version="0.1.1",
     author='John Livingston',
     author_email = 'jliv84@gmail.com',
     url = 'https://github.com/john-livingston/limbdark',
@@ -41,7 +41,7 @@ setup(
     long_description=rd("README.md") + "\n\n"
                     + "---------\n\n",
     package_dir={"limbdark": "limbdark"},
-    package_data={"limbdark": ["data/*.txt"]},
+    package_data={"limbdark": ["data/claret_2011.csv"]},
     scripts=['scripts/limbdark'],
     include_package_data=True,
     keywords=['limb-darkening'],

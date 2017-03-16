@@ -5,27 +5,35 @@ import numpy as np
 import pandas as pd
 
 import pkg_resources
-fp = pkg_resources.resource_filename(__name__, 'data/claret2012_all.txt')
+fp = pkg_resources.resource_filename(__name__, 'data/claret_2011.csv')
 
-def get_ld_df(band, teff, uteff, logg, ulogg, fp=fp):
+
+def get_ld_df(band, teff, uteff, logg, ulogg, feh=None, ufeh=None):
+
     """
-    Requires whitespace delimited table from:
-    http://vizier.cfa.harvard.edu/viz-bin/VizieR-3?-source=J/A%2bA/546/A14
+    Table downloaded from:
+    http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/A%2bA/529/A75/table-af
     """
 
-    names = 'logg teff feh xi u1 u2 band method model'.split()
-    df = pd.read_table(fp, names=names, delim_whitespace=True)
+    df = pd.read_csv(fp)
 
-    idx = (df.teff <= teff + uteff) & (df.teff >= teff - uteff) &\
-          (df.logg <= logg + ulogg) & (df.logg >= logg - ulogg) &\
-          (df.band == band)
+    if feh is not None and ufeh is not None:
+        idx = (df.teff <= teff + uteff) & (df.teff >= teff - uteff) &\
+              (df.logg <= logg + ulogg) & (df.logg >= logg - ulogg) &\
+              (df.mh <= feh + ufeh) & (df.mh >= feh - ufeh) &\
+              (df.band == band)
+    else:
+        idx = (df.teff <= teff + uteff) & (df.teff >= teff - uteff) &\
+              (df.logg <= logg + ulogg) & (df.logg >= logg - ulogg) &\
+              (df.band == band)
 
-    return df.loc[idx]
+    return df[idx]
 
-def get_ld(band, teff, uteff, logg, ulogg, median=True, fp=fp):
 
-    df = get_ld_df(band, teff, uteff, logg, ulogg, fp)
-    u1, u2 = df.u1, df.u2
+def get_ld(band, teff, uteff, logg, ulogg, feh=None, ufeh=None, median=True):
+
+    df = get_ld_df(band, teff, uteff, logg, ulogg, feh, ufeh)
+    u1, u2 = df.a, df.b
 
     if median:
         return np.median(u1), np.std(u1), np.median(u2), np.std(u2)
