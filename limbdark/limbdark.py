@@ -20,7 +20,7 @@ def get_ld_df(band, teff, uteff, logg, ulogg, feh=None, ufeh=None):
     if feh is not None and ufeh is not None:
         idx = (df.teff <= teff + uteff) & (df.teff >= teff - uteff) &\
               (df.logg <= logg + ulogg) & (df.logg >= logg - ulogg) &\
-              (df.mh <= feh + ufeh) & (df.mh >= feh - ufeh) &\
+              (df.feh <= feh + ufeh) & (df.feh >= feh - ufeh) &\
               (df.band == band)
     else:
         idx = (df.teff <= teff + uteff) & (df.teff >= teff - uteff) &\
@@ -33,7 +33,7 @@ def get_ld_df(band, teff, uteff, logg, ulogg, feh=None, ufeh=None):
 def get_ld(band, teff, uteff, logg, ulogg, feh=None, ufeh=None, median=True):
 
     df = get_ld_df(band, teff, uteff, logg, ulogg, feh, ufeh)
-    u1, u2 = df.a, df.b
+    u1, u2 = df.u1, df.u2
 
     if median:
         return np.median(u1), np.std(u1), np.median(u2), np.std(u2)
