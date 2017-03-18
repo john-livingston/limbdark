@@ -30,16 +30,16 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4)):
     s_logg = logg + np.random.randn(n) * ulogg
     s_feh = feh + np.random.randn(n) * ufeh
 
-    interp = LinearNDInterpolator(points, values)
-    res = interp(s_teff, s_logg, s_feh)
-    u1, u2 = np.median(res, axis=0)
-    u1_sig, u2_sig = res.std(axis=0)
+    # interp = LinearNDInterpolator(points, values)
+    # res = interp(s_teff, s_logg, s_feh)
+    # u1, u2 = np.median(res, axis=0)
+    # u1_sig, u2_sig = res.std(axis=0)
 
-    # interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
-    # interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
-    # u1 = np.median(interp_u1(s_teff, s_logg, s_feh))
-    # u1_sig = np.std(interp_u1(s_teff, s_logg, s_feh))
-    # u2 = np.median(interp_u2(s_teff, s_logg, s_feh))
-    # u2_sig = np.std(interp_u2(s_teff, s_logg, s_feh))
+    interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
+    interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
+    u1 = np.median(interp_u1(s_teff, s_logg, s_feh))
+    u1_sig = np.std(interp_u1(s_teff, s_logg, s_feh))
+    u2 = np.median(interp_u2(s_teff, s_logg, s_feh))
+    u2_sig = np.std(interp_u2(s_teff, s_logg, s_feh))
 
     return u1, u1_sig, u2, u2_sig
