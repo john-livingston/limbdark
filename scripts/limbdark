@@ -2,7 +2,7 @@
 
 import numpy as np
 import argparse
-from limbdark import get_ld_df
+import limbdark
 
 
 parser = argparse.ArgumentParser(description="retrieve limb-darkening coefficients for Kepler")
@@ -21,9 +21,9 @@ else:
     feh,ufeh = None, None
 
 if args.band == 'kep':
-    df = get_ld_df('Kp', teff, uteff, logg, ulogg, feh, ufeh)
+    df = limbdark.claret_ld_df('Kp', teff, uteff, logg, ulogg, feh, ufeh)
 elif args.band == 'spz':
-    df = get_ld_df('S2', teff, uteff, logg, ulogg, feh, ufeh)
+    df = limbdark.claret_ld_df('S2', teff, uteff, logg, ulogg, feh, ufeh)
 
 print("number of models: {}".format(df.shape[0]))
 print("\tmin\tmean\tmax")

@@ -1,1 +1,1 @@
-from limbdark import get_ld, get_ld_df
+from limbdark import claret_ld, claret_ld_df
