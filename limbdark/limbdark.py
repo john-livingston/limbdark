@@ -40,7 +40,7 @@ def claret_ld(band, teff, uteff, logg, ulogg, feh=None, ufeh=None, median=True, 
     if df.shape[0] == 0:
         ff = 1
         while df.shape[0] == 0:
-            df = get_ld_df(band, teff, ff*uteff, logg, ff*ulogg, feh, ff*ufeh)
+            df = claret_ld_df(band, teff, ff*uteff, logg, ff*ulogg, feh, ff*ufeh)
             ff += 0.1
 
     u1, u2 = df.u1, df.u2
