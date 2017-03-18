@@ -3,7 +3,6 @@
 import sys
 import numpy as np
 import pandas as pd
-from scipy.interpolate import LinearNDInterpolator
 from scipy.interpolate import NearestNDInterpolator
 
 import pkg_resources
@@ -29,11 +28,6 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4)):
     s_teff = teff + np.random.randn(n) * uteff
     s_logg = logg + np.random.randn(n) * ulogg
     s_feh = feh + np.random.randn(n) * ufeh
-
-    # interp = LinearNDInterpolator(points, values)
-    # res = interp(s_teff, s_logg, s_feh)
-    # u1, u2 = np.median(res, axis=0)
-    # u1_sig, u2_sig = res.std(axis=0)
 
     interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
     interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
