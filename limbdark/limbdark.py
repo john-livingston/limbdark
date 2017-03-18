@@ -3,54 +3,43 @@
 import sys
 import numpy as np
 import pandas as pd
+from scipy.interpolate import LinearNDInterpolator
+from scipy.interpolate import NearestNDInterpolator
 
 import pkg_resources
-fp = pkg_resources.resource_filename(__name__, 'data/claret_2011.csv')
+_fp = pkg_resources.resource_filename(__name__, 'data/claret_2011.csv')
 
 
-def claret_ld_df(band, teff, uteff, logg, ulogg, feh=None, ufeh=None):
+def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4)):
 
     """
     Uses table downloaded from:
     http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/A%2bA/529/A75/table-af
-    """
 
-    df = pd.read_csv(fp)
-
-    if feh is not None and ufeh is not None:
-        idx = (df.teff <= teff + uteff) & (df.teff >= teff - uteff) &\
-              (df.logg <= logg + ulogg) & (df.logg >= logg - ulogg) &\
-              (df.feh <= feh + ufeh) & (df.feh >= feh - ufeh) &\
-              (df.band == band)
-    else:
-        idx = (df.teff <= teff + uteff) & (df.teff >= teff - uteff) &\
-              (df.logg <= logg + ulogg) & (df.logg >= logg - ulogg) &\
-              (df.band == band)
-
-    return df[idx]
-
-
-def claret_ld(band, teff, uteff, logg, ulogg, feh=None, ufeh=None, median=True, verbose=True):
-
-    """
     band must be one of: B C H I J K Kp R S1 S2 S3 S4 U V b g* i* r* u u* v y z*
     """
 
-    df = claret_ld_df(band, teff, uteff, logg, ulogg, feh, ufeh)
-    if df.shape[0] == 0:
-        ff = 1
-        while df.shape[0] == 0:
-            df = claret_ld_df(band, teff, ff*uteff, logg, ff*ulogg, feh, ff*ufeh)
-            ff += 0.1
+    df = pd.read_csv(_fp)
+    idx = df.band == band
+    df = df[idx]
 
-    u1, u2 = df.u1, df.u2
+    points = df['teff logg feh'.split()].values
+    values = df['u1 u2'.split()].values
 
-    if verbose:
-        print "Using {} models".format(df.shape[0])
-        for key in "teff logg feh".split():
-            print "{} range: {} - {}".format(key, df[key].min(), df[key].max())
+    s_teff = teff + np.random.randn(n) * uteff
+    s_logg = logg + np.random.randn(n) * ulogg
+    s_feh = feh + np.random.randn(n) * ufeh
 
-    if median:
-        return np.median(u1), np.std(u1), np.median(u2), np.std(u2)
+    interp = LinearNDInterpolator(points, values)
+    res = interp(s_teff, s_logg, s_feh)
+    u1, u2 = np.median(res, axis=0)
+    u1_sig, u2_sig = res.std(axis=0)
 
-    return np.mean(u1), np.std(u1), np.mean(u2), np.std(u2)
+    # interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
+    # interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
+    # u1 = np.median(interp_u1(s_teff, s_logg, s_feh))
+    # u1_sig = np.std(interp_u1(s_teff, s_logg, s_feh))
+    # u2 = np.median(interp_u2(s_teff, s_logg, s_feh))
+    # u2_sig = np.std(interp_u2(s_teff, s_logg, s_feh))
+
+    return u1, u1_sig, u2, u2_sig

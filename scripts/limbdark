@@ -21,16 +21,10 @@ else:
     feh,ufeh = None, None
 
 if args.band == 'kep':
-    df = limbdark.claret_ld_df('Kp', teff, uteff, logg, ulogg, feh, ufeh)
+    u = limbdark.claret('Kp', teff, uteff, logg, ulogg, feh, ufeh)
 elif args.band == 'spz':
-    df = limbdark.claret_ld_df('S2', teff, uteff, logg, ulogg, feh, ufeh)
+    u = limbdark.claret('S2', teff, uteff, logg, ulogg, feh, ufeh)
 
-print("number of models: {}".format(df.shape[0]))
-print("\tmin\tmean\tmax")
-print("temp:\t{0:.2f}\t{1:.2f}\t{2:.2f}".format(df.teff.min(), df.teff.mean(), df.teff.max()))
-print("logg:\t{0:.2f}\t{1:.2f}\t{2:.2f}".format(df.logg.min(), df.logg.mean(), df.logg.max()))
-print("feh:\t{0:.2f}\t{1:.2f}\t{2:.2f}".format(df.feh.min(), df.feh.mean(), df.feh.max()))
-print("-" * 10 + " limb-darkening coefficients " + "-" * 10)
-print("mean:   {0:.6f}, {1:.6f}".format(df.u1.mean(), df.u2.mean()))
-print("median: {0:.6f}, {1:.6f}".format(np.median(df.u1), np.median(df.u2)))
-print("std:    {0:.6f}, {1:.6f}".format(np.std(df.u1), np.std(df.u2)))
+u1, u1_sig, u2, u2_sig = u
+print "u1 = {} +/- {}".format(u1, u1_sig)
+print "u2 = {} +/- {}".format(u2, u2_sig)
