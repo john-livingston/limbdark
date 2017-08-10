@@ -6,7 +6,25 @@ import pandas as pd
 from scipy.interpolate import NearestNDInterpolator
 
 import pkg_resources
-_fp = pkg_resources.resource_filename(__name__, 'data/claret_2011.csv')
+_FP = pkg_resources.resource_filename(__name__, 'data/claret_2011.csv')
+_DF = pd.read_csv(_FP)
+
+
+def _interp(band, teff, logg, feh):
+
+    idx = _DF.band == band
+    df = _DF[idx]
+
+    points = df['teff logg feh'.split()].values
+    values = df['u1 u2'.split()].values
+
+    interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
+    interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
+
+    u1 = interp_u1(teff, logg, feh)
+    u2 = interp_u2(teff, logg, feh)
+
+    return u1, u2
 
 
 def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4)):
@@ -17,10 +35,8 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4)):
 
     band must be one of: B C H I J K Kp R S1 S2 S3 S4 U V b g* i* r* u u* v y z*
     """
-
-    df = pd.read_csv(_fp)
-    idx = df.band == band
-    df = df[idx]
+    idx = _DF.band == band
+    df = _DF[idx]
 
     points = df['teff logg feh'.split()].values
     values = df['u1 u2'.split()].values
