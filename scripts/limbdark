@@ -26,5 +26,5 @@ elif args.band == 'spz':
     u = limbdark.claret('S2', teff, uteff, logg, ulogg, feh, ufeh)
 
 u1, u1_sig, u2, u2_sig = u
-print "u1 = {} +/- {}".format(u1, u1_sig)
-print "u2 = {} +/- {}".format(u2, u2_sig)
+print "u1 = {0:.4f} +/- {1:.4f}".format(u1, u1_sig)
+print "u2 = {0:.4f} +/- {1:.4f}".format(u2, u2_sig)
