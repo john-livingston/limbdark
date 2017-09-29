@@ -1,1 +1,1 @@
-from limbdark import claret
+from .limbdark import claret
