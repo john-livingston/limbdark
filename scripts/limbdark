@@ -6,9 +6,9 @@ import limbdark
 
 
 parser = argparse.ArgumentParser(description="retrieve limb-darkening coefficients for Kepler")
-parser.add_argument('--teff', help='effective temperature of the star (Teff) [Kelvin]: mu,sigma', type=str)
-parser.add_argument('--logg', help='surface gravity of the star (logg) [dex]: mu,sigma', type=str, default=None)
-parser.add_argument('--feh', help='metallicity of the star (feh) [dex]: mu,sigma', type=str, default=None)
+parser.add_argument('--teff', help='effective temperature of the star -- Teff (Kelvin): mu,sigma', type=str)
+parser.add_argument('--logg', help='surface gravity of the star -- logg (cgs): mu,sigma', type=str, default=None)
+parser.add_argument('--feh', help='metallicity of the star -- [Fe/H] (dex): mu,sigma', type=str, default=None)
 parser.add_argument('--band', help='the bandpass name: either kep or spz', type=str, default='kep')
 
 args = parser.parse_args()
@@ -26,5 +26,5 @@ elif args.band == 'spz':
     u = limbdark.claret('S2', teff, uteff, logg, ulogg, feh, ufeh)
 
 u1, u1_sig, u2, u2_sig = u
-print "u1 = {0:.4f} +/- {1:.4f}".format(u1, u1_sig)
-print "u2 = {0:.4f} +/- {1:.4f}".format(u2, u2_sig)
+print("u1 = {0:.4f} +/- {1:.4f}".format(u1, u1_sig))
+print("u2 = {0:.4f} +/- {1:.4f}".format(u2, u2_sig))
