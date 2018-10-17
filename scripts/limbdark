@@ -6,9 +6,9 @@ import limbdark
 
 
 parser = argparse.ArgumentParser(description="retrieve limb-darkening coefficients for Kepler")
-parser.add_argument('--teff', help='effective temperature of the star (Teff) [Kelvin]: mu,sigma', type=str)
-parser.add_argument('--logg', help='surface gravity of the star (logg) [dex]: mu,sigma', type=str, default=None)
-parser.add_argument('--feh', help='metallicity of the star (feh) [dex]: mu,sigma', type=str, default=None)
+parser.add_argument('--teff', help='effective temperature of the star -- Teff (Kelvin): mu,sigma', type=str)
+parser.add_argument('--logg', help='surface gravity of the star -- logg (cgs): mu,sigma', type=str, default=None)
+parser.add_argument('--feh', help='metallicity of the star -- [Fe/H] (dex): mu,sigma', type=str, default=None)
 parser.add_argument('--band', help='bandpass name', type=str, default='Kp')
 parser.add_argument('--law', help='limb-darkening law', type=str, default='quadratic')
 parser.add_argument('-n', '--nsamples', help='limb-darkening law', type=int, default=int(1e4))
