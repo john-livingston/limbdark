@@ -1,15 +1,13 @@
-# limbdark
-
-Limb-darkening priors based on [Claret+2011](https://ui.adsabs.harvard.edu/?#abs/2011A%26A...529A..75C) and [Claret 2017](https://ui.adsabs.harvard.edu/?#abs/2017A%26A...600A..30C)
+Limb darkening parameters from [Claret+2011](https://ui.adsabs.harvard.edu/?#abs/2011A%26A...529A..75C) and [Claret 2017](https://ui.adsabs.harvard.edu/?#abs/2017A%26A...600A..30C)
 ==
 
-Uses a Monte Carlo interpolation routine to propagate uncertaintes in stellar parameters to uncertainties in the limb darkening parameters. 
+Uses a Monte Carlo interpolation routine to propagate uncertaintes in stellar parameters to uncertainties in limb darkening parameters, e.g. for informative priors in Bayesian transit analysis.
 --
 
 Supports the following limb darkening laws and photometric bands:
+--
 
 Laws
---
 - linear
 - quadratic
 - square-root
@@ -17,7 +15,6 @@ Laws
 - nonlinear
 
 Bands
---
 - B
 - C
 - H
