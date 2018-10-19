@@ -32,13 +32,30 @@ def _get_df(band, law, cool=False):
     return df
 
 
+def u_to_q(u1, u2):
+    """
+    Maps limb-darkening u space to q space
+    """
+    q1 = (u1 + u2)**2
+    q2 = u1 / (2 * (u1 + u2))
+    return [q1, q2]
 
-def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4), law='quadratic', verbose=True):
+
+def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4), law='quadratic', transform=False, verbose=True):
 
     """
-    band must be one of: B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*
-    law must be one of: linear quadratic squareroot logarithmic nonlinear
-    All bands come from Claret+2011, except for T (TESS), which comes from Claret 2017
+    band : photometric band. must be one of: B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*
+    teff : stellar effective temperature [K]
+    uteff : uncertainty in stellar effective temperature [K]
+    logg : stellar surface gravity [cgs]
+    ulogg : uncertainty in stellar surface gravity [cgs]
+    feh : metallicity [dex]
+    ufeh : uncertainty in metallicity [dex]
+    n : Number of onte Carlo samples (optional, default is 10000)
+    law : limb darkening law (optional, default is quadratic) must be one of: linear quadratic squareroot logarithmic nonlinear
+    transform : transform quadratic limb darkening parameters to q-space (optional, default is False), see https://arxiv.org/abs/1308.0009
+
+    All bands come from Claret+2011, except for T (TESS), which comes from Claret 2017.
 
     Uses tables downloaded from:
     http://vizier.u-strasbg.fr/viz-bin/VizieR?-source=J%2FA%2BA%2F529%2FA75
@@ -78,7 +95,10 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4), law='quadratic
     elif law == 'quadratic' or law == 'squareroot' or law == 'logarithmic':
 
         keys = 'u1 u2'.split()
-        values = df[keys].values
+        if law == 'quadratic' and transform:
+            values = df[keys].apply(lambda x: u_to_q(*x), axis=1).values
+        else:
+            values = df[keys].values
         interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
         interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
         u1 = np.median(interp_u1(s_teff, s_logg, s_feh))
