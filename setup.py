@@ -67,5 +67,5 @@ setup(
         'Topic :: Scientific/Engineering',
         'Programming Language :: Python'
         ],
-    install_requires = ['numpy', 'pandas==0.20.3'],
+    install_requires = ['numpy', 'pandas'],
 )
