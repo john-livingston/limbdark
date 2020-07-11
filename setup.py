@@ -32,7 +32,7 @@ else:
 setup(
     name='limbdark',
     packages =['limbdark'],
-    version="0.1.1",
+    version="0.2.1",
     author='John Livingston',
     author_email = 'jliv84@gmail.com',
     url = 'https://github.com/john-livingston/limbdark',
