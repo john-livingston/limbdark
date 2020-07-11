@@ -1,49 +1,35 @@
 #!/usr/bin/env python
-import os
-import sys
 import numpy as np
-import pandas as pd
-from scipy.interpolate import NearestNDInterpolator
 
-import pkg_resources
+from .util import get_interpolators, u_to_q
 
+class LDInterpolator:
 
-def _get_df(band, law, cool=False):
+    def __init__(self, band, law='quadratic', cool=False):
 
-    if band in "B C H I J K Kp R S1 S2 S3 S4 U V b g* i* r* u u* v y z*".split():
+        """
+        band : photometric band. must be one of: B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*
+        law : must be one of: linear quadratic squareroot logarithmic nonlinear
+        cool : use True if band=='T' and Teff < 3500 (assumes Solar metallicity and using PHOENIX-COND models instead of the usual ATLAS models)
+        """
 
-        fn = 'claret+2011_{}.csv.gz'.format(law)
-        fp = pkg_resources.resource_filename(__name__, os.path.join('data', fn))
-        df = pd.read_csv(fp)
-        idx = df.band == band
-        df = df[idx]
+        self.band = band
+        self.law = law
+        self.interpolators = get_interpolators(band, law=law, cool=cool)
 
-    elif band == "T":
+    def __call__(self, teff, logg, feh):
+        
+        return [interp(teff, logg, feh) for interp in self.interpolators]
 
-        if cool:
-            tablenums = dict(linear=13, quadratic=15, squareroot=17, logarithmic=19, nonlinear=21)
-        else:
-            tablenums = dict(linear=24, quadratic=25, squareroot=26, logarithmic=27, nonlinear=28)
-
-        fn = 'claret_2017_table{}.csv.gz'.format(tablenums[law])
-        fp = pkg_resources.resource_filename(__name__, os.path.join('data', fn))
-        df = pd.read_csv(fp)
-
-    return df
-
-
-def u_to_q(u1, u2):
-    """
-    Maps limb-darkening u space to q space
-    """
-    q1 = (u1 + u2)**2
-    q2 = u1 / (2 * (u1 + u2))
-    return [q1, q2]
-
-
-def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4), law='quadratic', transform=False, verbose=True):
+def claret(band, teff, uteff, logg, ulogg, feh, ufeh, 
+    n=int(1e5), law='quadratic', transform=False):
 
     """
+    Estimates limb darkening from stellar parameters and their 
+    associated uncertainties, based on: 
+    Claret+2011 (https://ui.adsabs.harvard.edu/abs/2011A%26A...529A..75C/abstract)
+    Claret+2017 (https://ui.adsabs.harvard.edu/abs/2017A%26A...600A..30C/abstract)
+
     band : photometric band. must be one of: B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*
     teff : stellar effective temperature [K]
     uteff : uncertainty in stellar effective temperature [K]
@@ -62,21 +48,11 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4), law='quadratic
     http://vizier.u-strasbg.fr/viz-bin/VizieR?-source=J%2FA%2BA%2F600%2FA30
     """
 
-    if band not in "B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*".split():
-        raise(ValueError("band must be one of: B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*"))
-
-    if law not in "linear quadratic squareroot logarithmic nonlinear".split():
-        raise(ValueError("law must be one of: linear quadratic squareroot logarithmic nonlinear"))
-
-    if band == 'T':
-        cool = teff < 3500
-        if cool and verbose:
-            print("WARNING: Teff < 3500, assuming Solar metallicity and using PHOENIX-COND models instead of the usual ATLAS models")
-        df = _get_df(band, law, cool)
+    if band == 'T' and teff < 3500:
+        print("Teff < 3500: assuming Solar metallicity and using PHOENIX-COND models instead of the usual ATLAS models")
+        cool = True
     else:
-        df = _get_df(band, law)
-
-    points = df['teff logg feh'.split()].values
+        cool = False
 
     s_teff = teff + np.random.randn(n) * uteff
     s_logg = logg + np.random.randn(n) * ulogg
@@ -84,45 +60,22 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e4), law='quadratic
 
     if law == 'linear':
 
-        keys = 'u'
-        values = df[keys].values
-        interp_u = NearestNDInterpolator(points, values, rescale=True)
-        u = np.median(interp_u(s_teff, s_logg, s_feh))
-        u_sig = np.std(interp_u(s_teff, s_logg, s_feh))
-
-        return u, u_sig
+        interp = LDInterpolator(band, law, cool)
+        u = interp(s_teff, s_logg, s_feh)[0]
+        return u.mean(), u.std()
 
     elif law == 'quadratic' or law == 'squareroot' or law == 'logarithmic':
 
-        keys = 'u1 u2'.split()
+        interp = LDInterpolator(band, law, cool)
+        u1, u2 = interp(s_teff, s_logg, s_feh)
         if law == 'quadratic' and transform:
-            values = df[keys].apply(lambda x: u_to_q(*x), axis=1).values
+            q1, q2 = u_to_q(u1, u2)
+            return q1.mean(), q1.std(), q2.mean(), q2.std()
         else:
-            values = df[keys].values
-        interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
-        interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
-        u1 = np.median(interp_u1(s_teff, s_logg, s_feh))
-        u1_sig = np.std(interp_u1(s_teff, s_logg, s_feh))
-        u2 = np.median(interp_u2(s_teff, s_logg, s_feh))
-        u2_sig = np.std(interp_u2(s_teff, s_logg, s_feh))
-
-        return u1, u1_sig, u2, u2_sig
+            return u1.mean(), u1.std(), u2.mean(), u2.std()
 
     elif law == 'nonlinear':
 
-        keys = 'u1 u2 u3 u4'.split()
-        values = df[keys].values
-        interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
-        interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
-        interp_u3 = NearestNDInterpolator(points, values.T[2], rescale=True)
-        interp_u4 = NearestNDInterpolator(points, values.T[3], rescale=True)
-        u1 = np.median(interp_u1(s_teff, s_logg, s_feh))
-        u1_sig = np.std(interp_u1(s_teff, s_logg, s_feh))
-        u2 = np.median(interp_u2(s_teff, s_logg, s_feh))
-        u2_sig = np.std(interp_u2(s_teff, s_logg, s_feh))
-        u3 = np.median(interp_u3(s_teff, s_logg, s_feh))
-        u3_sig = np.std(interp_u3(s_teff, s_logg, s_feh))
-        u4 = np.median(interp_u4(s_teff, s_logg, s_feh))
-        u4_sig = np.std(interp_u4(s_teff, s_logg, s_feh))
-
-        return u1, u1_sig, u2, u2_sig, u3, u3_sig, u4, u4_sig
+        interp = LDInterpolator(band, law, cool)
+        u1, u2, u3, u4 = interp(s_teff, s_logg, s_feh)
+        return u1.mean(), u1.std(), u2.mean(), u2.std(), u3.mean(), u3.std(), u4.mean(), u4.std()
