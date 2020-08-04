@@ -29,10 +29,13 @@ else:
         f.close()
         return r
 
+import limbdark
+version = limbdark.__version__
+
 setup(
     name='limbdark',
     packages =['limbdark'],
-    version="0.2.1",
+    version=version,
     author='John Livingston',
     author_email = 'jliv84@gmail.com',
     url = 'https://github.com/john-livingston/limbdark',
