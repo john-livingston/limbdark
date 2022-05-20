@@ -42,7 +42,7 @@ setup(
     license = 'GNU GPLv3',
     description ='A simple package for obtaining Gaussian priors for limb darkening coefficients based on Claret+2012.',
     long_description=rd("README.md") + "\n\n"
-                       + "---------\n\n",
+                    + "---------\n\n",
     long_description_content_type="text/markdown",
     package_dir={"limbdark": "limbdark"},
     package_data={"limbdark": [
