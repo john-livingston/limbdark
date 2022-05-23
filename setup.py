@@ -40,7 +40,7 @@ setup(
     author_email = 'john.livingston@nao.ac.jp',
     url = 'https://github.com/john-livingston/limbdark',
     license = 'GNU GPLv3',
-    description ='A simple package for obtaining Gaussian priors for limb darkening coefficients based on Claret+2012.',
+    description ='A simple package for obtaining Gaussian priors for limb darkening coefficients.',
     long_description=rd("README.md") + "\n\n"
                     + "---------\n\n",
     long_description_content_type="text/markdown",
