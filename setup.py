@@ -37,7 +37,7 @@ setup(
     packages =['limbdark'],
     version=version,
     author='John Livingston',
-    author_email = 'john.livingston@nao.ac.jp',
+    author_email = 'livingston.astro@gmail.com',
     url = 'https://github.com/john-livingston/limbdark',
     license = 'GNU GPLv3',
     description ='A simple package for obtaining Gaussian priors for limb darkening coefficients.',
