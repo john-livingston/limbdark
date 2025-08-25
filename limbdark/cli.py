@@ -2,7 +2,7 @@
 
 import numpy as np
 import argparse
-from . import claret
+from .claret import claret
 
 
 def main():
