@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "limbdark"
+version = "0.2.1"
+description = "A simple package for obtaining Gaussian priors for limb darkening coefficients."
+readme = "README.md"
+license = {text = "GNU GPLv3"}
+authors = [
+    {name = "John Livingston", email = "livingston.astro@gmail.com"}
+]
+keywords = ["limb-darkening"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "numpy",
+    "scipy", 
+    "pandas"
+]
+requires-python = ">=3.6"
+
+[project.urls]
+Homepage = "https://github.com/john-livingston/limbdark"
+
+[project.scripts]
+limbdark = "limbdark.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["limbdark*"]
+
+[tool.setuptools.package-data]
+limbdark = [
+    "data/*.csv.gz"
+]
