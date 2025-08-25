@@ -5,8 +5,7 @@ from .util import u_to_q
 from .interpolator import LDInterpolator
 
 
-def claret(band, teff, uteff, logg, ulogg, feh, ufeh, 
-    n=int(1e5), law='quadratic', transform=False):
+def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e5), law='quadratic', kind='nearest', transform=False):
 
     """
     Estimates limb darkening from stellar parameters and their 
@@ -42,24 +41,23 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh,
     s_logg = logg + np.random.randn(n) * ulogg
     s_feh = feh + np.random.randn(n) * ufeh
 
+    interp = LDInterpolator(band, law=law, kind=kind, cool=cool)
+
     if law == 'linear':
 
-        interp = LDInterpolator(band, law, cool)
         u = interp(s_teff, s_logg, s_feh)[0]
-        return u.mean(), u.std()
+        return np.nanmean(u), np.nanstd(u)
 
     elif law == 'quadratic' or law == 'squareroot' or law == 'logarithmic':
 
-        interp = LDInterpolator(band, law, cool)
         u1, u2 = interp(s_teff, s_logg, s_feh)
         if law == 'quadratic' and transform:
             q1, q2 = u_to_q(u1, u2)
-            return q1.mean(), q1.std(), q2.mean(), q2.std()
+            return np.nanmean(q1), np.nanstd(q1), np.nanmean(q2), np.nanstd(q2)
         else:
-            return u1.mean(), u1.std(), u2.mean(), u2.std()
+            return np.nanmean(u1), np.nanstd(u1), np.nanmean(u2), np.nanstd(u2)
 
     elif law == 'nonlinear':
 
-        interp = LDInterpolator(band, law, cool)
         u1, u2, u3, u4 = interp(s_teff, s_logg, s_feh)
-        return u1.mean(), u1.std(), u2.mean(), u2.std(), u3.mean(), u3.std(), u4.mean(), u4.std()
+        return np.nanmean(u1), np.nanstd(u1), np.nanmean(u2), np.nanstd(u2), np.nanmean(u3), np.nanstd(u3), np.nanmean(u4), np.nanstd(u4)

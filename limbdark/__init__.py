@@ -1,5 +1,5 @@
 __all__ = ['interpolator', 'claret', 'util']
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 from .util import BANDS, LAWS
 from .interpolator import LDInterpolator

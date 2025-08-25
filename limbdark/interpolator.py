@@ -6,7 +6,7 @@ from .util import get_interpolators
 
 class LDInterpolator:
 
-    def __init__(self, band, law='quadratic', cool=False):
+    def __init__(self, band, law='quadratic', kind='linear', cool=False):
 
         """
         band : photometric band. must be one of: B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*
@@ -16,7 +16,7 @@ class LDInterpolator:
 
         self.band = band
         self.law = law
-        self.interpolators = get_interpolators(band, law=law, cool=cool)
+        self.interpolators = get_interpolators(band, kind=kind, law=law, cool=cool)
 
     def __call__(self, teff, logg, feh):
         

@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from scipy.interpolate import NearestNDInterpolator
+from scipy.interpolate import NearestNDInterpolator, LinearNDInterpolator, RegularGridInterpolator
 import pkg_resources
 
 BANDS = "B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*".split()
@@ -44,7 +44,7 @@ def get_df(band, law, cool=False):
     return df
 
 
-def get_interpolators(band, law='quadratic', cool=False, verbose=False):
+def get_interpolators(band, kind='linear', law='quadratic', cool=False, verbose=False):
 
     if band not in BANDS:
         raise(ValueError(f"band must be one of: {' '.join(BANDS)}"))
@@ -56,24 +56,35 @@ def get_interpolators(band, law='quadratic', cool=False, verbose=False):
 
     points = df['teff logg feh'.split()].values
 
+    if kind == 'linear':
+        interpolator = LinearNDInterpolator
+        kwargs = dict(rescale=True)
+    elif kind == 'nearest':
+        interpolator = NearestNDInterpolator
+        kwargs = dict(rescale=True)
+    elif kind == 'regular':
+        interpolator = RegularGridInterpolator
+        kwargs = {}
+        raise NotImplementedError
+
     if law == 'linear':
         keys = 'u'
         values = df[keys].values
-        interp = NearestNDInterpolator(points, values, rescale=True)
+        interp = interpolator(points, values, **kwargs)
         return [interp]
 
     elif law == 'quadratic' or law == 'squareroot' or law == 'logarithmic':
         keys = 'u1 u2'.split()
         values = df[keys].values
-        interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
-        interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
+        interp_u1 = interpolator(points, values.T[0], **kwargs)
+        interp_u2 = interpolator(points, values.T[1], **kwargs)
         return [interp_u1, interp_u2]
 
     elif law == 'nonlinear':
         keys = 'u1 u2 u3 u4'.split()
         values = df[keys].values
-        interp_u1 = NearestNDInterpolator(points, values.T[0], rescale=True)
-        interp_u2 = NearestNDInterpolator(points, values.T[1], rescale=True)
-        interp_u3 = NearestNDInterpolator(points, values.T[2], rescale=True)
-        interp_u4 = NearestNDInterpolator(points, values.T[3], rescale=True)
+        interp_u1 = interpolator(points, values.T[0], **kwargs)
+        interp_u2 = interpolator(points, values.T[1], **kwargs)
+        interp_u3 = interpolator(points, values.T[2], **kwargs)
+        interp_u4 = interpolator(points, values.T[3], **kwargs)
         return [interp_u1, interp_u2, interp_u3, interp_u4]
