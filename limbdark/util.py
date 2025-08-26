@@ -76,15 +76,9 @@ def get_interpolators(band, kind='linear', law='quadratic', cool=False, verbose=
     elif law == 'quadratic' or law == 'squareroot' or law == 'logarithmic':
         keys = 'u1 u2'.split()
         values = df[keys].values
-        interp_u1 = interpolator(points, values.T[0], **kwargs)
-        interp_u2 = interpolator(points, values.T[1], **kwargs)
-        return [interp_u1, interp_u2]
+        return [interpolator(points, values.T[i], **kwargs) for i in range(2)]
 
     elif law == 'nonlinear':
         keys = 'u1 u2 u3 u4'.split()
         values = df[keys].values
-        interp_u1 = interpolator(points, values.T[0], **kwargs)
-        interp_u2 = interpolator(points, values.T[1], **kwargs)
-        interp_u3 = interpolator(points, values.T[2], **kwargs)
-        interp_u4 = interpolator(points, values.T[3], **kwargs)
-        return [interp_u1, interp_u2, interp_u3, interp_u4]
+        return [interpolator(points, values.T[i], **kwargs) for i in range(4)]

@@ -53,11 +53,11 @@ def claret(band, teff, uteff, logg, ulogg, feh, ufeh, n=int(1e5), law='quadratic
         u1, u2 = interp(s_teff, s_logg, s_feh)
         if law == 'quadratic' and transform:
             q1, q2 = u_to_q(u1, u2)
-            return np.nanmean(q1), np.nanstd(q1), np.nanmean(q2), np.nanstd(q2)
+            return [val for u in [q1, q2] for val in [np.nanmean(u), np.nanstd(u)]]
         else:
-            return np.nanmean(u1), np.nanstd(u1), np.nanmean(u2), np.nanstd(u2)
+            return [val for u in [u1, u2] for val in [np.nanmean(u), np.nanstd(u)]]
 
     elif law == 'nonlinear':
 
         u1, u2, u3, u4 = interp(s_teff, s_logg, s_feh)
-        return np.nanmean(u1), np.nanstd(u1), np.nanmean(u2), np.nanstd(u2), np.nanmean(u3), np.nanstd(u3), np.nanmean(u4), np.nanstd(u4)
+        return [val for u in [u1, u2, u3, u4] for val in [np.nanmean(u), np.nanstd(u)]]
