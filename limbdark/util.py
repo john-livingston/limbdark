@@ -1,7 +1,11 @@
 import os
 import pandas as pd
 from scipy.interpolate import NearestNDInterpolator, LinearNDInterpolator, RegularGridInterpolator
-import pkg_resources
+try:
+    from importlib.resources import files
+except ImportError:
+    # Python < 3.9 fallback
+    from importlib_resources import files
 
 BANDS = "B C H I J K Kp T R S1 S2 S3 S4 U V b g* i* r* u u* v y z*".split()
 LAWS = "linear quadratic squareroot logarithmic nonlinear".split()
@@ -30,13 +34,13 @@ def get_df(band, law, cool=False):
             tablenums = dict(linear=24, quadratic=25, squareroot=26, logarithmic=27, nonlinear=28)
 
         fn = 'claret_2017_table{}.csv.gz'.format(tablenums[law])
-        fp = pkg_resources.resource_filename(__name__, os.path.join('data', fn))
+        fp = files('limbdark.data') / fn
         df = pd.read_csv(fp)
 
     elif band in BANDS:
 
         fn = 'claret+2011_{}.csv.gz'.format(law)
-        fp = pkg_resources.resource_filename(__name__, os.path.join('data', fn))
+        fp = files('limbdark.data') / fn
         df = pd.read_csv(fp)
         idx = df.band == band
         df = df[idx]
