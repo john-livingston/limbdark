@@ -10,6 +10,32 @@ Uses Monte Carlo interpolation to propagate uncertainties in stellar parameters 
 pip install git+https://github.com/john-livingston/limbdark
 ```
 
+## Usage
+
+### Command Line
+
+```bash
+limbdark --teff 4970,120 --logg 4.25,0.03 --feh 0,0.2 --band Kp
+```
+
+### Python
+
+```python
+import limbdark as ld
+
+# Get quadratic limb darkening parameters for Kepler band
+u1_mean, u1_std, u2_mean, u2_std = ld.claret(
+    band='Kp',
+    teff=4970, uteff=120,
+    logg=4.25, ulogg=0.03,
+    feh=0.0, ufeh=0.2,
+    law='quadratic'
+)
+
+print(f"u1 = {u1_mean:.4f} ± {u1_std:.4f}")
+print(f"u2 = {u2_mean:.4f} ± {u2_std:.4f}")
+```
+
 ## Supported Laws and Bands
 
 **Laws:** linear, quadratic, square-root, logarithmic, nonlinear
