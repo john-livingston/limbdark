@@ -4,6 +4,8 @@ Limb darkening parameters from [Claret+2011](https://ui.adsabs.harvard.edu/?#abs
 
 Uses Monte Carlo interpolation to propagate uncertainties in stellar parameters to uncertainties in limb darkening parameters for Bayesian transit analysis. The interpolation supports linear and nearest neighbor methods across the stellar parameter grid.
 
+Documentation: [john-livingston.github.io/limbdark](https://john-livingston.github.io/limbdark)
+
 ## Installation
 
 ```bash
